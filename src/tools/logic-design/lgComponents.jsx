@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
-import { Stage, Layer, Star, Text, Rect, Group, Arc,Path, Line, Circle, TextPath } from 'react-konva';
+import { Stage, Layer, Star, Text, Rect, Group, Arc,Path, Line, Circle, TextPath,Image } from 'react-konva';
 import { v4 as uuid } from 'uuid';
-
+import useImage from 'use-image';
 const Pather = ({radius,...props})=>{
     return <Path
     {...props}
@@ -12,10 +12,10 @@ const Pather = ({radius,...props})=>{
 }
 
 
-const Clicker = ({type,charge,source = null,onClick,points,radius,hoverColor,setRef,id = null,setOutput = ()=>{}})=>{
+const Clicker = ({x=0,y=0,type,charge,source = null,onClick,points,radius,hoverColor,setRef,id = null,setOutput = ()=>{}})=>{
     const [color,setColor] = useState('black')
     const ref = useRef()
-    return <Group type={type !== 'charge'?type:null}>
+    return <Group x={x} y={y} type={type !== 'charge'?type:null}>
         <Line stroke='black' points={points}/>
         <Circle 
             setOutput={setOutput}
@@ -147,4 +147,17 @@ const Screen = ({setRef,charge,...props})=>{
 </>
 }
 
-export {AndGate,OrGate,NorGate,XNorGate,Charge,Point,Screen}
+const Lamp = ({setRef,charge,...props}) => {
+    let lamps = ['/lampOff.png','/lampOn.png']
+    const [onOff,setOnOff] = useState(0)
+    const [image] = useImage(lamps[onOff]);
+    return <>
+                <Group draggable onDragStart={props.onDragStart} onDragMove={props.onDragMove} {...props}>
+                        <Image scaleX={0.3} scaleY={0.3} image={image} />
+                        <Clicker x={40} y={120} setOutput={setOnOff}  source={true} setRef={setRef} onClick={props?.onClick} type={'screen'} id={uuid()} points={[0,0,0]} radius={3}/>
+                </Group>
+            </>
+  };
+
+
+export {AndGate,OrGate,NorGate,XNorGate,Charge,Point,Screen,Lamp}

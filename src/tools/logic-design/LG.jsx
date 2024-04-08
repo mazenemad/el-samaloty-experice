@@ -1,5 +1,5 @@
 import { Stage, Layer, Rect, Line, Group } from 'react-konva';
-import { AndGate, Charge, NorGate, OrGate, Point, XNorGate,Screen } from './lgComponents';
+import { AndGate, Charge, NorGate, OrGate, Point, XNorGate,Screen, Lamp } from './lgComponents';
 import { useEffect, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 const LG = ({elements}) => {
@@ -86,10 +86,10 @@ const LG = ({elements}) => {
         console.log(index, e._id);
         const {element1, element2} = getTwoElements(array[index]);
         setTimeout(() => {
-            if(element1.attrs.type === 'input'){
+            if(element1.attrs.type !== 'charge'){
                 element1.attrs.charge = null;
             }
-            if(element2.attrs.type === 'input'){
+            if(element2.attrs.type !== 'charge'){
                 element2.attrs.charge = null;
             }
 
@@ -195,8 +195,17 @@ const LG = ({elements}) => {
                     charge = 1
                 }else if(input1 === 0 && input2 === 0){
                     charge = 0
-                }else 
-                charge = -1
+                }else{
+                    // console.log(input1,input2)
+                    charge = 0
+                    if(input1 === 1){
+                        charge = 1
+                    }
+                    if(input2 === 1){
+                        charge = 1
+                    }
+                }
+                
             }
             else if(type === 'andGate'){
                 if(input1 === 0 && input2 === 1){
@@ -272,7 +281,7 @@ const LG = ({elements}) => {
             let check1 = input1.attrs.charge === 0 || input1.attrs.charge === 1
             let check2 = input2.attrs.charge === 0 || input2.attrs.charge === 1
             if(
-                check1&&check2
+                check1||check2
             ){
                 let charge = setCharge(input1.attrs.charge,input2.attrs.charge,type)
                 output.attrs.charge = charge
@@ -309,10 +318,11 @@ const LG = ({elements}) => {
             const connectionId = clicker.attrs.connectionId
             if(connectionId){
                 const output = stageRef.find(node => node.attrs.connectionId === connectionId && node._id !== clicker._id)[0]
-                // console.log(output,clicker,'screen')
                 if(output.attrs.charge ===0 || output.attrs.charge === 1)
                 clicker.attrs.setOutput(output.attrs.charge)
                 else
+                clicker.attrs.setOutput(0)
+            }else{
                 clicker.attrs.setOutput(0)
             }
         }
@@ -320,7 +330,7 @@ const LG = ({elements}) => {
     useEffect(()=>{
         setInterval(() => {
             simulate()
-        }, 1000);
+        }, 10);
     },[])
     return (
         <>
@@ -335,6 +345,7 @@ const LG = ({elements}) => {
                 <Rect onClick={() => { setCurrentPoint(null) }} fill='white' x={0} y={0} width={window.innerWidth} height={window.innerHeight} />
                 <Group ref={mainGroup}>
                 {currentPoint && <Line stroke={'red'} points={[currentPointPosition.x, currentPointPosition.y, cursor.x, cursor.y]} />}
+              
                 {
                     elements.map(e=>{
                         
@@ -354,6 +365,8 @@ const LG = ({elements}) => {
                         return <Point  x={100} y={100} onDragMove={()=>{updateLines()}} setRef={setCurrentPoint} onClick={handleClick}/>
                         else if(e.type ==='screen')
                         return <Screen  x={100} y={100} onDragMove={()=>{updateLines()}} setRef={setCurrentPoint} onClick={handleClick}/>
+                        else if(e.type ==='lamp')
+                        return <Lamp  x={100} y={100} onDragMove={()=>{updateLines()}} setRef={setCurrentPoint} onClick={handleClick}/>
                     })
                 }
                 {/* <AndGate x={100} y={100} onDragMove={()=>{updateLines()}} setRef={setCurrentPoint} onClick={handleClick}/>

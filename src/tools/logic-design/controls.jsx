@@ -1,5 +1,5 @@
 import { Group, Layer, Stage,Text } from "react-konva";
-import { AndGate, Charge, NorGate, OrGate, XNorGate,Point,Screen } from "./lgComponents";
+import { AndGate, Charge, NorGate, OrGate, XNorGate,Point,Screen, Lamp } from "./lgComponents";
 
 
 export default function Controls({elements,setElements}){
@@ -25,6 +25,7 @@ export default function Controls({elements,setElements}){
                     {/* <Point onClick={()=>{setElements([...elements,{type:'point'}])}} draggable={false} x={30} y={140}/> */}
                 </Group>
                 <Group y={400}>
+                    <Lamp  onClick={()=>{setElements([...elements,{type:'lamp'}])}} draggable={false} x={10} y={50}/>
                     <Screen  onClick={()=>{setElements([...elements,{type:'screen'}])}} draggable={false} x={30} y={60}/>
                 </Group>
             </Layer>
